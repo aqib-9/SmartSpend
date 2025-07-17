@@ -168,20 +168,20 @@ export async function scanReceipt(file) {
 
 export async function getTransaction(id) {
   const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
+  if (!userId) return null;
 
   const user = await db.user.findUnique({
     where: { clerkUserId: userId },
   });
-  if (!user) throw new Error("User not found");
+  if (!user) return null;
 
   const transaction = await db.transaction.findUnique({
     where: { id, userId: user.id },
   });
-  if (!transaction) throw new Error("Transaction not found");
 
-  return serializeAmount(transaction);
+  return transaction ? serializeAmount(transaction) : null;
 }
+
 
 export async function updateTransaction(id, data) {
   try {
